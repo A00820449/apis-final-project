@@ -1,0 +1,21 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model BusinessUser {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  businessID    String  @unique
+  passwordHash  String
+  businessName  String
+  logoURL       String?
+  dateJoined    DateTime @default(now())
+  isAdmin       Boolean @default(false)
+}
