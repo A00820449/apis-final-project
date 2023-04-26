@@ -1,40 +1,11 @@
-import { withSessionSsr } from "@/lib/session";
+import { UserSessionProps, getServerSidePropsUserSession } from "@/lib/session";
 import { Container } from "@mui/material";
-import { User } from "./api/user";
-import { getUserData } from "@/lib/db";
 import Link from "next/link";
 
-export const getServerSideProps = withSessionSsr(async ({req})=>{
+// gets User info and redirects to /login if not found
+export const getServerSideProps = getServerSidePropsUserSession
 
-    if (!req.session.user_id) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login"
-            }
-        }
-    }
-
-    const user = await getUserData(req.session.user_id)
-    
-    if (!user) {
-        req.session.destroy()
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login"
-            }
-        }
-    }
-
-    return {
-        props: {
-            user: user
-        }
-    }
-})
-
-const Dashboard = ({user}: {user: User | null}) => {
+export default function Dashboard({user}: UserSessionProps)  {
     return (
         <Container sx={{marginTop: "1rem"}}>
             Hello, {user?.businessName}
@@ -44,5 +15,3 @@ const Dashboard = ({user}: {user: User | null}) => {
         </Container>
     )
 }
-
-export default Dashboard

@@ -1,6 +1,8 @@
 import type { IronSessionOptions } from 'iron-session'
 import { withIronSessionApiRoute, withIronSessionSsr } from 'iron-session/next'
 import { GetServerSidePropsContext, GetServerSidePropsResult, NextApiHandler } from 'next'
+import { getUserData } from './db'
+import { User } from '@/pages/api/user'
 
 export const sessionOptions: IronSessionOptions = {
   password: process.env.SECRET_COOKIE_PASSWORD as string,
@@ -22,6 +24,38 @@ export function withSessionSsr<P extends { [key: string]: unknown } = { [key: st
   return withIronSessionSsr(handler, sessionOptions);
 }
 
+
+export const getServerSidePropsUserSession = withSessionSsr(async ({req})=>{
+
+  if (!req.session.user_id) {
+      return {
+          redirect: {
+              permanent: false,
+              destination: "/login"
+          }
+      }
+  }
+
+  const user = await getUserData(req.session.user_id)
+  
+  if (!user) {
+      req.session.destroy()
+      return {
+          redirect: {
+              permanent: false,
+              destination: "/login"
+          }
+      }
+  }
+
+  return {
+      props: {
+          user: user
+      }
+  }
+})
+
+export type UserSessionProps = {user: User | null}
 
 // This is where we specify the typings of req.session.*
 declare module 'iron-session' {

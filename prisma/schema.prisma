@@ -11,11 +11,39 @@ datasource db {
 }
 
 model BusinessUser {
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId // maps MongoDB's _id to a String field
   businessID    String  @unique
   passwordHash  String
   businessName  String
+  phoneNum      String?
+  Address       String?
   logoURL       String?
   dateJoined    DateTime @default(now())
   isAdmin       Boolean @default(false)
+  catalog       Service[]
+  appointments  Appointment[]
+}
+
+model Service {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  businessUser    BusinessUser @relation(references: [id], fields: [businessUserID]) // defines the one-to-many relation
+  businessUserID  String @db.ObjectId
+  eventName       String
+  description     String?
+  durationInMins  Int @default(10)
+}
+
+model Appointment {
+  id                    String  @id @default(auto()) @map("_id") @db.ObjectId
+  businessUser          BusinessUser @relation(references: [id], fields: [businessUserID])
+  businessUserID        String @db.ObjectId
+  serviceName           String
+  timeStart             DateTime
+  timeEnd               DateTime
+  contactEmail          String?
+  confirmed             Boolean @default(false)
+  creationTime          DateTime @default(now())
+  appointmentTime       DateTime
+  endTime               DateTime
+  notes                 String?
 }

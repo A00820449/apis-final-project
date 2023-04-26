@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEventHandler, useRef, useState } from "react";
 
+// Redirect to /dashboard if logged in
 export const getServerSideProps = withSessionSsr(async ({req})=>{
 
     if (req.session.user_id) {
@@ -21,7 +22,7 @@ export const getServerSideProps = withSessionSsr(async ({req})=>{
 })
 
 
-const SignUp = () => {
+export default function SignUp() {
 
     const [errmessage, setErrMessage] = useState("")
     const [message, setMessage] = useState("")
@@ -98,5 +99,3 @@ const SignUp = () => {
         </Container>
     )
 }
-
-export default SignUp
