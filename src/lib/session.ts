@@ -25,7 +25,7 @@ export function withSessionSsr<P extends { [key: string]: unknown } = { [key: st
 }
 
 
-export const getServerSidePropsUserSession = withSessionSsr(async ({req})=>{
+export const getServerSidePropsUserSession = withSessionSsr(async ({req}) : Promise<GetServerSidePropsResult<UserSessionProps>> =>{
 
   if (!req.session.user_id) {
       return {
@@ -55,7 +55,7 @@ export const getServerSidePropsUserSession = withSessionSsr(async ({req})=>{
   }
 })
 
-export type UserSessionProps = {user: User | null}
+export type UserSessionProps = {user: User}
 
 // This is where we specify the typings of req.session.*
 declare module 'iron-session' {

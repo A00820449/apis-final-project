@@ -1,7 +1,11 @@
 import { withSessionApiRoute } from "@/lib/session";
 import { NextApiHandler } from "next";
 
-const handler: NextApiHandler = async (req, res) => {
+type Response = {
+    id: null
+}
+
+const handler: NextApiHandler<Response> = async (req, res) => {
     req.session.destroy()
     res.send({id: null})
 }

@@ -1,11 +1,28 @@
 import { withSessionSsr } from "@/lib/session";
 import { Alert, Box, Button, Container, TextField, Typography } from "@mui/material";
+import { GetServerSidePropsResult } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEventHandler, useState } from "react";
+import { LoginInput, LoginResponse } from "./api/login";
+
+async function fetchLogin(input: LoginInput) : Promise<LoginResponse> {
+    try {
+        return await fetch("/api/login", {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(input)
+        }).then(r => r.json())
+    }
+    catch(e) {
+        return {message: "An error occurred"}
+    }
+}
 
 // Redirect to /dashboard if logged in
-export const getServerSideProps = withSessionSsr(async ({req})=>{
+export const getServerSideProps = withSessionSsr(({req}) : GetServerSidePropsResult<any> =>{
 
     if (req.session.user_id) {
         return {
@@ -22,7 +39,7 @@ export const getServerSideProps = withSessionSsr(async ({req})=>{
 })
 
 
-const Login = () => {
+export default function Login() {
 
     const [message, setMessage] = useState("")
     const [uploading, setUploading] = useState(false)
@@ -43,24 +60,15 @@ const Login = () => {
         setUploading(true)
 
         try {
-            const res = await fetch("/api/login", {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify({username, password})
-            })
-            const data = await res.json()
-            if (!res.ok) {
-                setMessage(data?.message || 'An error occurred')
+            const res = await fetchLogin({username, password})
+            if (!res.id) {
+                throw new Error(res.message)
             }
-            else {
-                router.push("/dashboard")   
-            }
+            router.push("/dashboard")
         }
         catch (e) {
             if (e instanceof Error) { 
-                setMessage(e?.message || 'An error occurred')
+                setMessage(e.message || 'An error occurred')
             }
             else {
                 setMessage('An error occurred')
@@ -84,5 +92,3 @@ const Login = () => {
         </Container>
     )
 }
-
-export default Login

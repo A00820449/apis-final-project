@@ -1,15 +1,18 @@
 import { NextApiHandler } from "next";
-import { hash } from "bcrypt";
-import { prisma } from "@/lib/db";
-import { PrismaClientInitializationError, PrismaClientKnownRequestError, PrismaClientRustPanicError, PrismaClientUnknownRequestError, PrismaClientValidationError } from "@prisma/client/runtime";
+import { signupQuery } from "@/lib/db";
 
-interface SignUpInput {
-    businessID?: string,
-    name?: string,
-    password?: string
+export type SignUpInput = {
+    businessID: string,
+    name: string,
+    password: string
 }
 
-const handler: NextApiHandler = async (req, res) => {
+export type SignUpResponse = {
+    message?: string,
+    id?: string
+}
+
+const handler: NextApiHandler<SignUpResponse> = async (req, res) => {
     try {
         const {businessID = '', name = '', password = ''} = req.body as SignUpInput
 
@@ -21,31 +24,23 @@ const handler: NextApiHandler = async (req, res) => {
             return res.status(400).json({message: "Invalid business ID"})
         }
 
-        const passwrodHash = await hash(password, 10)
+        const user_id = await signupQuery(businessID, password, name)
 
-        const user = await prisma.businessUser.create({
-            data: {
-                businessID: businessID,
-                businessName: name,
-                passwordHash: passwrodHash
-            }
-        })
-
-        res.json({id: user.id})
+        if (!user_id) {
+            return res.status(400).json({message: "Business ID already exists"})
+        }
+        
+        res.json({id: user_id})
 
     }
     catch(e) {
         console.error(e)
-        if (typeof e === "object" && e !== null && "code" in e && e.code === 'P2002') {
-            res.status(400).json({message: "Business ID already exists"})
-        }
         /** Send error message if there is one (might not be secure) */
-        /*else if (e instanceof Error) {
-            res.status(500).json({message: e.message || "An error occurred"})
+        /*if (e instanceof Error) {
+            return res.status(500).json({message: e.message || "An error occurred"})
         }*/
-        else {
-            res.status(500).json({message: "An error occurred"})
-        }
+        
+        res.status(500).json({message: "An error occurred"})
     }
 }
 

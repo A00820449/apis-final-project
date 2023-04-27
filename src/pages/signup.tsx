@@ -3,6 +3,22 @@ import { Alert, Box, Button, Container, TextField, Typography } from "@mui/mater
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEventHandler, useRef, useState } from "react";
+import { SignUpInput, SignUpResponse } from "./api/signup";
+
+async function fetchSignup(input: SignUpInput) : Promise<SignUpResponse> {
+    try {
+        return await fetch("/api/signup", {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(input)
+        }).then(r => r.json())
+    }
+    catch(e) {
+        return {message: "An error occurred"}
+    }
+}
 
 // Redirect to /dashboard if logged in
 export const getServerSideProps = withSessionSsr(async ({req})=>{
@@ -51,18 +67,10 @@ export default function SignUp() {
 
         setUploading(true)
         try {
-            const res = await fetch("/api/signup", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({businessID: username, name, password})
-            })
+            const res = await fetchSignup({businessID: username, password: password, name: name})
 
-            const data = await res.json()
-
-            if (!res.ok) {
-                throw new Error(data?.message || "Server error")
+            if (!res.id) {
+                throw new Error(res.message || "Server error")
             }
             setErrMessage("")
 

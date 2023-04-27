@@ -1,7 +1,8 @@
 import { User } from "@/pages/api/user";
 import { PrismaClient } from "@prisma/client";
-import { compare } from "bcrypt";
+import { compare, hash } from "bcrypt";
 
+// Boilerplate so the db connection is saved between reloads
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
@@ -14,6 +15,11 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") { globalForPrisma.prisma = prisma; }
+// End of boilerplate
+
+
+
+//START OF QUERY FUNCTIONS//
 
 export async function getUserData(id: string) : Promise<User | null> {
   return await prisma.businessUser.findUnique({
@@ -29,7 +35,7 @@ export async function getUserData(id: string) : Promise<User | null> {
   })
 }
 
-export async function LoginInputQuery(username: string, password: string) {
+export async function loginQuery(username: string, password: string) {
   const user = await prisma.businessUser.findUnique({
       where: {
           businessID: username
@@ -45,4 +51,27 @@ export async function LoginInputQuery(username: string, password: string) {
   }
 
   return null
+}
+
+export async function signupQuery(businessID: string, password: string, name: string) {
+  const passwrodHash = await hash(password, 10)
+  try {
+    const user = await prisma.businessUser.create({
+      data: {
+          businessID: businessID,
+          businessName: name,
+          passwordHash: passwrodHash
+        }
+      })
+
+    return user.id
+  }
+  catch(e) {
+    if (typeof e === "object" && e !== null && "code" in e && e.code === 'P2002') {
+      return null
+    }
+    else {
+      throw e
+    }
+  }
 }

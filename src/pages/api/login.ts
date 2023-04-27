@@ -1,13 +1,18 @@
 import { NextApiHandler } from "next";
 import { withSessionApiRoute } from "@/lib/session";
-import { LoginInputQuery, prisma } from "@/lib/db";
+import { loginQuery } from "@/lib/db";
 
-interface LoginInput {
-    username?: string,
-    password?: string
+export type LoginInput = {
+    username: string,
+    password: string
 }
 
-const handler: NextApiHandler = async (req, res) => {
+export type LoginResponse = {
+    message?: string
+    id?: string
+}
+
+const handler: NextApiHandler<LoginResponse> = async (req, res) => {
     const {username, password} = req.body as LoginInput
 
     if (!username || !password) {
@@ -15,7 +20,7 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     try {
-        const user_id = await LoginInputQuery(username, password)
+        const user_id = await loginQuery(username, password)
 
         if (user_id) {
             req.session.user_id = user_id
