@@ -1,17 +1,19 @@
 import { getUserData } from "@/lib/db";
-import { sessionOptions } from "@/lib/session";
-import { withIronSessionApiRoute } from "iron-session/next";
+import { withSessionApiRoute } from "@/lib/session";
 import { NextApiHandler } from "next";
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler<User|UserError> = async (req, res) => {
     const id = req.session.user_id
 
     try {
         const user = await getUserData(id)
-        res.json({...user})
+        if (!user) {
+            return res.status(400).json({id: null, message: "Server error"})
+        }
+        res.json(user)
     } catch (e) {
         console.error(e)
-        res.status(500).json({message: "Server error"})
+        res.status(500).json({id: null, message: "Server error"})
     }
 }
 
@@ -23,4 +25,11 @@ export type User = {
     isAdmin: boolean
 }
 
-export default withIronSessionApiRoute(handler, sessionOptions)
+type UserError = {
+    id: null,
+    message: string
+}
+
+export type UserResponse = User | UserError
+
+export default withSessionApiRoute(handler)
