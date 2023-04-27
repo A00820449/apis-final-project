@@ -1,11 +1,14 @@
 import { NextApiHandler } from "next";
 import { signupQuery } from "@/lib/db";
+import { z } from "zod";
 
-export type SignUpInput = {
-    businessID: string,
-    name: string,
-    password: string
-}
+const signUpInputSchema = z.object({
+    businessID: z.string().nonempty(),
+    name: z.string().nonempty(),
+    password: z.string().nonempty(),
+})
+
+export type SignUpInput = z.infer<typeof signUpInputSchema>
 
 export type SignUpResponse = {
     message?: string,
@@ -14,12 +17,14 @@ export type SignUpResponse = {
 
 const handler: NextApiHandler<SignUpResponse> = async (req, res) => {
     try {
-        const {businessID = '', name = '', password = ''} = req.body as SignUpInput
+        const input = signUpInputSchema.safeParse(req.body)
 
-        if (!businessID || !name || !password) {
+        if (!input.success) {
             return res.status(400).json({message: "Invalid request"})
         }
 
+        const {businessID, name, password} = input.data
+        
         if (!businessID.match(/^[A-Za-z0-9_.-]{3,16}$/g)) {
             return res.status(400).json({message: "Invalid business ID"})
         }
