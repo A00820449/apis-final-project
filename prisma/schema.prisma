@@ -16,7 +16,7 @@ model BusinessUser {
   passwordHash  String
   businessName  String
   phoneNum      String?
-  Address       String?
+  address       String?
   logoURL       String?
   dateJoined    DateTime @default(now())
   isAdmin       Boolean @default(false)

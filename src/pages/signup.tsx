@@ -97,6 +97,8 @@ export default function SignUp() {
             <form ref={formEl} onSubmit={handleSubmit}>
                 <TextField required sx={{marginBottom: "1rem"}} fullWidth name="username" placeholder="Business ID (will be used in your URL)"/>
                 <TextField required sx={{marginBottom: "1rem"}} fullWidth name="name" placeholder="Business Name"/>
+                <TextField sx={{marginBottom: "1rem"}} fullWidth name="phone_number" placeholder="Phone Number (optional)" type="tel"/>
+                <TextField sx={{marginBottom: "1rem"}} fullWidth name="address" placeholder="Address (optional)" type="text" />
                 <TextField required sx={{marginBottom: "1rem"}} fullWidth name="password" placeholder="Password" type="password"/>
                 <TextField required sx={{marginBottom: "1rem"}} fullWidth name="password2" placeholder="Confirm Password" type="password"/>
                 <Button sx={{marginBottom: "1rem"}} type="submit" disabled={uploading} fullWidth variant="contained">Register Account</Button>
