@@ -11,9 +11,10 @@
     "prisma-db-push": "prisma db push"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
-    "@mui/material": "^5.11.16",
+    "@emotion/react": "^11.10.8",
+    "@emotion/styled": "^11.10.8",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.12.2",
     "@prisma/client": "^4.13.0",
     "@types/bcrypt": "^5.0.0",
     "@types/node": "18.15.11",
