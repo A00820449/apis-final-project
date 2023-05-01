@@ -35,6 +35,14 @@ export async function getUserData(id: string) : Promise<User | null> {
   })
 }
 
+export async function getBusinessData(businessID: string) {
+  return await prisma.businessUser.findFirst({
+    where: {
+      businessID: businessID
+    }
+  })
+}
+
 export async function loginQuery(username: string, password: string) {
   const user = await prisma.businessUser.findUnique({
       where: {
