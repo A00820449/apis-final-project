@@ -12,9 +12,7 @@ export default function NavDrawer({open, setClosed}: NavDrawerProps) {
         <Drawer anchor="left" open={open} onClose={setClosed} keepMounted>
             <div style={{width: "min(80vw,400px)"}} onClick={setClosed}>
                 <List>
-                    <ListItem >
-                        <NavListItem location="/dashboard" icon={<HomeIcon/>} text="Home"></NavListItem>
-                    </ListItem>
+                    <NavListItem location="/dashboard" icon={<HomeIcon/>} text="Home"></NavListItem>
                 </List>
             </div>
         </Drawer>

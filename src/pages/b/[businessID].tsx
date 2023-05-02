@@ -53,6 +53,7 @@ export async function getServerSideProps({query}: GetServerSidePropsContext) : P
 }
 
 const weekdays : readonly string[] = ["SUN", "MON", "TUE", "WED" , "THU", "FRI", "SAT"]
+const months : readonly string[] = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
 export default function BusinessHomePage({businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays, catalog}: Props) {
 
@@ -104,7 +105,7 @@ export default function BusinessHomePage({businessName, address, phone, startHou
                         {weekSchedule.map((d, i) => (
                         <TableCell key={i} align="center">
                             <div>{weekdays[i]}</div>
-                            <div style={{fontWeight: "bold"}}><NoSsr>{d[0].getDate()}</NoSsr></div>
+                            <div style={{fontWeight: "bold"}}><NoSsr>{months[d[0].getMonth()]}{" "}{d[0].getDate()}</NoSsr></div>
                         </TableCell>
                         ))}
                     </TableRow>

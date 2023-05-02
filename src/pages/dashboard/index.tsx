@@ -1,17 +1,34 @@
-import DashboardLayout from "@/components/dashboardLayout";
+import DashboardLayout, { getDashboardLayout } from "@/components/dashboardLayout";
 import { UserSessionProps, getServerSidePropsUserSession } from "@/lib/session";
-import { Container } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import Link from "next/link";
-import { ReactElement } from "react";
 import { NextPageWithLayout } from "../_app";
+import CopyToClipboard from "@/components/copyToClipboard";
+import { useRouter } from "next/router";
 
 // gets User session info and redirects to /login if not found
 export const getServerSideProps = getServerSidePropsUserSession
 
 const Dashboard : NextPageWithLayout<UserSessionProps> = ({user}: UserSessionProps) =>  {
+    const router = useRouter()
+    let url : string = "http://localhost/"
+
+    if (typeof window !== "undefined") {
+        url = window.location.href
+    }
+
+    const urlObject = new URL(url)
+    urlObject.pathname = `/@${user.businessID}`
+
+    url = urlObject.toString()
+    console.log(url)
+
     return (
         <Container sx={{marginTop: "1rem"}}>
-            Hello, {user.businessName}
+            <Typography variant="h4">Hello, {user.businessName}</Typography>
+            <div style={{display: "flex", alignItems: "center"}}>
+                <span style={{marginRight: "1rem"}}>URL for appointments:</span><CopyToClipboard text={url}/>
+            </div>
             <div>
                 <Link href={"/api/redirectLogout"}>Logout</Link>
             </div>
@@ -19,10 +36,6 @@ const Dashboard : NextPageWithLayout<UserSessionProps> = ({user}: UserSessionPro
     )
 }
 
-Dashboard.getLayout = (page: ReactElement) => {
-    return <DashboardLayout>
-        {page}
-    </DashboardLayout>
-}
+Dashboard.getLayout = getDashboardLayout
 
 export default Dashboard
