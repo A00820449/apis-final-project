@@ -1,4 +1,4 @@
-import DashboardLayout, { getDashboardLayout } from "@/components/dashboardLayout";
+import { getDashboardLayout } from "@/components/dashboardLayout";
 import { UserSessionProps, getServerSidePropsUserSession } from "@/lib/session";
 import { Container, Typography } from "@mui/material";
 import Link from "next/link";

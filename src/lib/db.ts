@@ -95,3 +95,11 @@ export async function signupQuery(businessID: string, password: string, name: st
     }
   }
 }
+
+export async function getUserCatalog(id: string) {
+  return prisma.service.findMany({
+    where: {
+      businessUserID: id
+    }
+  })
+}
