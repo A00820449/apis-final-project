@@ -19,7 +19,8 @@ type Props = {
     startMin: number,
     endHour: number,
     endMin: number,
-    workDays: number[]
+    workDays: number[],
+    catalog: {id: string, name: string}[]
 }
 
 export async function getServerSideProps({query}: GetServerSidePropsContext) : Promise<GetServerSidePropsResult<Props>> {
@@ -45,14 +46,15 @@ export async function getServerSideProps({query}: GetServerSidePropsContext) : P
             startMin: 0,
             endHour: 18,
             endMin: 30,
-            workDays: [1, 2, 3, 4, 5]
+            workDays: [1, 2, 3, 4, 5],
+            catalog: businessData.catalog.map((v) => ({id: v.id, name: v.eventName}))
         }
     }
 }
 
 const weekdays : readonly string[] = ["SUN", "MON", "TUE", "WED" , "THU", "FRI", "SAT"]
 
-export default function BusinessHomePage({businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays}: Props) {
+export default function BusinessHomePage({businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays, catalog}: Props) {
 
     const [appointmentDate, setAppointmentDate] = useState<Date|null>(null)
 
@@ -130,9 +132,11 @@ export default function BusinessHomePage({businessName, address, phone, startHou
                 <FormControl fullWidth>
                     <InputLabel id="service-select-label">Select Service</InputLabel>
                     <Select labelId="service-select-label" label="Select Service" required>
-                        <MenuItem value={1}>Option 1</MenuItem>
-                        <MenuItem value={2}>Option 2</MenuItem>
-                        <MenuItem value={0}>Other</MenuItem>
+                        {catalog.map((v)=>(
+                        <MenuItem value={v.id}>{v.name}</MenuItem>
+                        ))}
+                        <MenuItem value={"test"}>Test Option</MenuItem>
+                        <MenuItem value={""}>Other</MenuItem>
                     </Select>
                 </FormControl>
             </DialogContent>
