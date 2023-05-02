@@ -1,6 +1,6 @@
 import { getBusinessData } from "@/lib/db";
 import { getHourMinuteString } from "@/lib/util";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, NoSsr, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, NoSsr, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import { useState } from "react";
 
@@ -129,16 +129,16 @@ export default function BusinessHomePage({businessName, address, phone, startHou
             <form onSubmit={(e) => {e.preventDefault(); setAppointmentDate(null)}}>
             <DialogTitle>Make Appointment</DialogTitle>
             <DialogContent>
-                Appointment date: <NoSsr>{appointmentDate && `${appointmentDate.toDateString()}, ${appointmentDate.toTimeString()}`}</NoSsr>
+                <div style={{marginBottom: "1rem"}}>Appointment date: <NoSsr>{appointmentDate && `${appointmentDate.toDateString()}, ${appointmentDate.toTimeString()}`}</NoSsr></div>
                 <FormControl fullWidth>
                     <InputLabel id="service-select-label">Select Service</InputLabel>
                     <Select labelId="service-select-label" label="Select Service" required>
                         {catalog.map((v)=>(
-                        <MenuItem value={v.id}>{v.name}</MenuItem>
+                        <MenuItem key={v.id} value={v.id}>{v.name}</MenuItem>
                         ))}
-                        <MenuItem value={"test"}>Test Option</MenuItem>
-                        <MenuItem value={""}>Other</MenuItem>
+                        <MenuItem value={"0"}>Other</MenuItem>
                     </Select>
+                    <TextField multiline rows={4} placeholder="Additional notes..."/>
                 </FormControl>
             </DialogContent>
             <DialogActions>

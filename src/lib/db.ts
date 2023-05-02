@@ -49,7 +49,7 @@ export async function getBusinessData(businessID: string) {
 
   const cat = await prisma.service.findMany({
     where: {
-      businessUser: b
+      businessUserID: b.id
     }
   })
   return {...b, catalog: cat}
@@ -102,4 +102,22 @@ export async function getUserCatalog(id: string) {
       businessUserID: id
     }
   })
+}
+
+export async function createService(businessUserID: string,  eventName: string, description?: string, durationInMins?: number) {
+  try {
+    const service = await prisma.service.create({
+      data: {
+        businessUserID,
+        eventName,
+        description,
+        durationInMins
+      }
+    })
+    return service
+  }
+  catch(e) {
+    console.error(e)
+    return null
+  }
 }

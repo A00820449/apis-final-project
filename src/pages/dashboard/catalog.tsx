@@ -7,6 +7,7 @@ import { getUserCatalog, getUserData } from "@/lib/db";
 import { User } from "../api/user";
 import { Service } from "@prisma/client";
 import CatalogListItem from "@/components/catalogListItem";
+import CatalogUploadForm from "@/components/catalogUploadForm";
 
 type CatalogProps = {
     user: User,
@@ -52,6 +53,7 @@ const Catalog : NextPageWithLayout<CatalogProps> = ({user, catalog}) =>  {
     return (
         <Container sx={{marginTop: "1rem"}}>
             <Typography variant="h4">Your Service Catalog</Typography>
+            <CatalogUploadForm/>
             <List>
                 {catalog.length > 0 ?
                 catalog.map((v)=>(

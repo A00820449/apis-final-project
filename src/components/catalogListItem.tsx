@@ -1,4 +1,4 @@
-import { Box, ListItem } from "@mui/material"
+import { ListItem } from "@mui/material"
 import { Service } from "@prisma/client"
 
 type CatalogItemProps = {
@@ -7,9 +7,9 @@ type CatalogItemProps = {
 
 export default function CatalogListItem({service}: CatalogItemProps) {
     return (
-    <ListItem>
-        <Box>{service.eventName}</Box>
-        <Box>{service.description}</Box>
+    <ListItem sx={{display: "block"}}>
+        <div style={{fontWeight: "bold"}}>{service.eventName}</div>
+        <div>{service.description ? `Description: ${service.description}`: "No description."}</div>
     </ListItem>
     )
 }
