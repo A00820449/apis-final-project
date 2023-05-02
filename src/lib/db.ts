@@ -36,11 +36,23 @@ export async function getUserData(id: string) : Promise<User | null> {
 }
 
 export async function getBusinessData(businessID: string) {
-  return await prisma.businessUser.findFirst({
+
+  const b = await prisma.businessUser.findFirst({
     where: {
       businessID: businessID
     }
   })
+  
+  if (!b) {
+    return null
+  }
+
+  const cat = await prisma.service.findMany({
+    where: {
+      businessUser: b
+    }
+  })
+  return {...b, catalog: cat}
 }
 
 export async function loginQuery(username: string, password: string) {

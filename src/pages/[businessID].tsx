@@ -18,7 +18,7 @@ export function getServerSideProps(ctx: GetServerSidePropsContext) : GetServerSi
 
     return {
         redirect: {
-            destination: `/business/${encodeURIComponent(businessID.replace(/^@/, ""))}`,
+            destination: `/b/${encodeURIComponent(businessID.replace(/^@/, ""))}`,
             permanent: false
         }
     }
@@ -30,6 +30,6 @@ export default function Test() {
     const { businessID } = router.query as Query
 
     return <div>
-        <Link href={`/business/${encodeURIComponent(businessID.replace(/^@/, ""))}`}>Redirect</Link>
+        <Link href={`/b/${encodeURIComponent(businessID.replace(/^@/, ""))}`}>Redirect</Link>
     </div>
 }

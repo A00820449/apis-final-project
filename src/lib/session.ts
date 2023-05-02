@@ -28,6 +28,7 @@ export function withSessionSsr<P extends { [key: string]: unknown } = { [key: st
 export const getServerSidePropsUserSession = withSessionSsr(async ({req}) : Promise<GetServerSidePropsResult<UserSessionProps>> =>{
 
   if (!req.session.user_id) {
+    console.log("NOT LOGGED IN, REDIRECTING")
       return {
           redirect: {
               permanent: false,
