@@ -87,7 +87,7 @@ export default function Login() {
                 <Button sx={{marginBottom: "1rem"}} type="submit" disabled={uploading} fullWidth variant="contained">Log In</Button>
             </form>
             <Box>
-                Don't have an account? <Link href={'/signup'}>Sign up</Link>
+                Don&apos;t have an account? <Link href={'/signup'}>Sign up</Link>
             </Box>
         </Container>
     )

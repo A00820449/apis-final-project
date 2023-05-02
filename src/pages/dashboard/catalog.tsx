@@ -57,7 +57,7 @@ const Catalog : NextPageWithLayout<CatalogProps> = ({user, catalog}) =>  {
             <List>
                 {catalog.length > 0 ?
                 catalog.map((v)=>(
-                <CatalogListItem service={v} />
+                <CatalogListItem service={v} key={v.id} />
                 )) :
                 "Empty catalog..."
                 }

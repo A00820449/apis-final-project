@@ -2,6 +2,7 @@ import { getBusinessData } from "@/lib/db";
 import { getHourMinuteString } from "@/lib/util";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, NoSsr, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
+import Image from "next/image";
 import { useState } from "react";
 
 type Query = {
@@ -92,7 +93,7 @@ export default function BusinessHomePage({businessName, address, phone, startHou
 
     return (
         <>
-        <img src={logoURL} style={{display: "block", width: "100px", margin: "0 auto"}}/>
+        <Image alt="Company logo" src={logoURL} style={{display: "block", width: "100px", margin: "0 auto"}}/>
         <Typography variant="h3" align="center">{businessName}</Typography>
         <Box alignContent={"center"} textAlign={"center"}>
             {address ? `Address: ${address}` : "(No address available)"}
