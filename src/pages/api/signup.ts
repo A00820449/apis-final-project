@@ -6,6 +6,8 @@ const signUpInputSchema = z.object({
     businessID: z.string().nonempty(),
     name: z.string().nonempty(),
     password: z.string().nonempty(),
+    address: z.string().optional(),
+    phoneNum: z.string().optional()
 })
 
 export type SignUpInput = z.infer<typeof signUpInputSchema>
@@ -23,13 +25,13 @@ const handler: NextApiHandler<SignUpResponse> = async (req, res) => {
             return res.status(400).json({message: "Invalid request"})
         }
 
-        const {businessID, name, password} = input.data
+        const {businessID, name, password, address, phoneNum} = input.data
         
         if (!businessID.match(/^[A-Za-z0-9_.-]{3,16}$/g)) {
             return res.status(400).json({message: "Invalid business ID"})
         }
 
-        const user_id = await signupQuery(businessID, password, name)
+        const user_id = await signupQuery(businessID, password, name, address, phoneNum)
 
         if (!user_id) {
             return res.status(400).json({message: "Business ID already exists"})

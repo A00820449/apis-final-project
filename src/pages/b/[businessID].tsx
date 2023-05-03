@@ -89,15 +89,13 @@ export default function BusinessHomePage({businessName, address, phone, startHou
         }
     })
 
-    console.log(weekSchedule)
-
     return (
         <>
-        <Image alt="Company logo" src={logoURL} style={{display: "block", width: "100px", margin: "0 auto"}}/>
+        <Image alt="Company logo" src={logoURL} width={100} height={100} style={{display: "block", margin: "0 auto"}}/>
         <Typography variant="h3" align="center">{businessName}</Typography>
         <Box alignContent={"center"} textAlign={"center"}>
-            {address ? `Address: ${address}` : "(No address available)"}
-            {phone && `Address: ${phone}`}
+            <div>{address ? `Address: ${address}` : "(No address available)"}</div>
+            <div>{phone && `Phone number: ${phone}`}</div>
         </Box>
         <TableContainer component={Paper}>
             <Table stickyHeader>

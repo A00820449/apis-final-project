@@ -73,14 +73,25 @@ export async function loginQuery(username: string, password: string) {
   return null
 }
 
-export async function signupQuery(businessID: string, password: string, name: string) {
+export async function signupQuery(businessID: string, password: string, name: string, address?: string, phoneNUm?: string) {
   const passwrodHash = await hash(password, 10)
+
+  if (phoneNUm && !phoneNUm.match(/^[0-9]{10}$/)) {
+    phoneNUm = undefined
+  }
+
+  if (address) {
+    address = address.replace(/[ \n\r\t]]+/g, " ").trim()
+  }
+
   try {
     const user = await prisma.businessUser.create({
       data: {
           businessID: businessID,
           businessName: name,
-          passwordHash: passwrodHash
+          passwordHash: passwrodHash,
+          address: address,
+          phoneNum: phoneNUm
         }
       })
 

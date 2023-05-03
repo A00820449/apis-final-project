@@ -54,9 +54,16 @@ export default function SignUp() {
         const username = formData.get("username")?.toString()?.trim() || ''
         const password = formData.get("password")?.toString() || ''
         const password2 = formData.get("password2")?.toString() || ''
+        const address = formData.get("address")?.toString()?.trim()
+        const phoneNum = formData.get("phone_number")?.toString()?.trim()
 
         if (!username.match(/^[A-Za-z0-9_.-]{3,16}$/g)) {
             setErrMessage("Business ID has to be 3-16 characters long and can only contain numbers, letters, underscores, dashes, or periods.")
+            return
+        }
+
+        if (phoneNum && !phoneNum.match(/^[0-9]{10}$/)) {
+            setErrMessage("Phone number has to be exactly 10 digits long")
             return
         }
 
@@ -67,7 +74,7 @@ export default function SignUp() {
 
         setUploading(true)
         try {
-            const res = await fetchSignup({businessID: username, password: password, name: name})
+            const res = await fetchSignup({businessID: username, password: password, name: name, address: address, phoneNum: phoneNum})
 
             if (!res.id) {
                 throw new Error(res.message || "Server error")
@@ -96,15 +103,18 @@ export default function SignUp() {
             <Typography variant="h4" sx={{margin: "1rem 0"}}>Create an account</Typography>
             <form ref={formEl} onSubmit={handleSubmit}>
                 <TextField required sx={{marginBottom: "1rem"}} fullWidth name="username" placeholder="Business ID (will be used in your URL)"/>
-                <TextField required sx={{marginBottom: "1rem"}} fullWidth name="name" placeholder="Business Name"/>
+                <TextField type="tel" required sx={{marginBottom: "1rem"}} fullWidth name="name" placeholder="Business Name"/>
                 <TextField sx={{marginBottom: "1rem"}} fullWidth name="phone_number" placeholder="Phone Number (optional)" type="tel"/>
-                <TextField sx={{marginBottom: "1rem"}} fullWidth name="address" placeholder="Address (optional)" type="text" />
+                <TextField multiline rows={4}  sx={{marginBottom: "1rem"}} fullWidth name="address" placeholder="Address (optional)" type="text" />
                 <TextField required sx={{marginBottom: "1rem"}} fullWidth name="password" placeholder="Password" type="password"/>
                 <TextField required sx={{marginBottom: "1rem"}} fullWidth name="password2" placeholder="Confirm Password" type="password"/>
                 <Button sx={{marginBottom: "1rem"}} type="submit" disabled={uploading} fullWidth variant="contained">Register Account</Button>
             </form>
             <Box>
                 Already have and account? <Link href={'/login'}>Log In</Link>
+            </Box>
+            <Box>
+                <Link href={'/'}>← Go back</Link>
             </Box>
         </Container>
     )

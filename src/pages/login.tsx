@@ -89,6 +89,9 @@ export default function Login() {
             <Box>
                 Don&apos;t have an account? <Link href={'/signup'}>Sign up</Link>
             </Box>
+            <Box>
+                <Link href={'/'}>← Go back</Link>
+            </Box>
         </Container>
     )
 }
