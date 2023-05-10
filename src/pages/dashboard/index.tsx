@@ -4,13 +4,13 @@ import { Container, Typography } from "@mui/material";
 import Link from "next/link";
 import { NextPageWithLayout } from "../_app";
 import CopyToClipboard from "@/components/copyToClipboard";
-import { useRouter } from "next/router";
+import { useUser } from "@/lib/hooks";
 
 // gets User session info and redirects to /login if not found
 export const getServerSideProps = getServerSidePropsUserSession
 
-const Dashboard : NextPageWithLayout<UserSessionProps> = ({user}: UserSessionProps) =>  {
-    const router = useRouter()
+const Dashboard : NextPageWithLayout<UserSessionProps> = () =>  {
+    const {user} = useUser()
     let url : string = "http://localhost/"
 
     if (typeof window !== "undefined") {

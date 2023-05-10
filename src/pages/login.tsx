@@ -21,7 +21,7 @@ async function fetchLogin(input: LoginInput) : Promise<LoginResponse> {
     }
 }
 
-// Redirect to /dashboard if logged in
+//Redirect to /dashboard if logged in
 export const getServerSideProps = withSessionSsr(({req}) : GetServerSidePropsResult<any> =>{
 
     if (req.session.user_id) {
@@ -58,6 +58,7 @@ export default function Login() {
         if (!username || !password) {return}
 
         setUploading(true)
+        setMessage("")
 
         try {
             const res = await fetchLogin({username, password})
@@ -73,8 +74,8 @@ export default function Login() {
             else {
                 setMessage('An error occurred')
             }
+            setUploading(false)
         }
-        setUploading(false)
     }
 
     return (

@@ -44,10 +44,10 @@ export default function CatalogUploadForm() {
     }
 
     return (
-    <form onSubmit={handleSubmit} ref={formEl}>
+    <form onSubmit={handleSubmit} ref={formEl} style={{display: "flex", flexDirection: "column", gap: "1rem", justifyContent: "center"}}>
         <Typography variant="h6">Upload a new service</Typography>
-        <div><TextField name="eventName" style={{margin: "1rem 0"}} placeholder="Service Name" required/></div>
-        <div><TextField name="description" multiline rows={4} style={{margin: "1rem 0"}} placeholder="Description (optional)"/></div>
+        <div><TextField fullWidth name="eventName" placeholder="Service Name" required/></div>
+        <div><TextField fullWidth name="description" multiline rows={4} placeholder="Description (optional)"/></div>
         <div><Button type="submit" variant="contained" disabled={uploading}>Upload</Button></div>
     </form>
     )

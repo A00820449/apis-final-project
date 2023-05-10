@@ -5,6 +5,10 @@ import { NextApiHandler } from "next";
 const handler: NextApiHandler<User|UserError> = async (req, res) => {
     const id = req.session.user_id
 
+    if (!id) {
+        return res.status(400).json({id: null, message: "not logged in"})
+    }
+
     try {
         const user = await getUserData(id)
         if (!user) {
