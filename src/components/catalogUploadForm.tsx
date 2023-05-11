@@ -1,3 +1,4 @@
+import { useCatalog } from "@/lib/hooks"
 import { UploadServiceInput, UploadServiceResponse } from "@/pages/api/uploadService"
 import { Button, TextField, Typography } from "@mui/material"
 import { useRouter } from "next/router"
@@ -22,6 +23,7 @@ export default function CatalogUploadForm() {
     const [uploading, setUploading] = useState(false)
     const formEl = useRef<HTMLFormElement>(null)
     const router = useRouter()
+    const { mutate } = useCatalog()
 
     const handleSubmit : FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault()
@@ -38,8 +40,8 @@ export default function CatalogUploadForm() {
         setUploading(false)
         if (res.id && formEl.current !== null) {
             formEl.current.reset()
-            router.reload()
         }
+        mutate()
 
     }
 

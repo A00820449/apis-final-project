@@ -1,3 +1,4 @@
+import { GetCatalogResponse } from "@/pages/api/getCatalog";
 import { User, UserResponse } from "@/pages/api/user";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -32,4 +33,15 @@ export function useUser(redirectIfNotFound: boolean = true) {
     }
     
     return {user, error, isLoading, mutate}
+}
+
+export function useCatalog() {
+    const {data, error, isLoading, mutate} = useSWR<GetCatalogResponse>("/api/getCatalog", fetcher)
+
+    let catalog: GetCatalogResponse = []
+    if (data) {
+        catalog = data
+    }
+
+    return {catalog, error, isLoading, mutate}
 }
