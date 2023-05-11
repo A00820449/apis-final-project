@@ -4,6 +4,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormCon
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import Image from "next/image";
 import { useState } from "react";
+import { DateTime } from "luxon";
 
 type Query = {
     businessID: string
@@ -46,7 +47,7 @@ export async function getServerSideProps({query}: GetServerSidePropsContext) : P
             startHour: 8,
             startMin: 0,
             endHour: 18,
-            endMin: 30,
+            endMin: 0,
             workDays: [1, 2, 3, 4, 5],
             catalog: businessData.catalog.map((v) => ({id: v.id, name: v.eventName}))
         }
@@ -59,7 +60,88 @@ const months : readonly string[] = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "J
 export default function BusinessHomePage({businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays, catalog}: Props) {
 
     const [appointmentDate, setAppointmentDate] = useState<Date|null>(null)
+    const [weekOffset, setWeekOffset] = useState(0)
 
+    if (!logoURL) {
+        logoURL = "/default_pfp.jpg"
+    }
+
+    const localSunday = DateTime.now().toLocal().startOf("week").plus({days: -1}).plus({weeks: weekOffset});
+
+    const week_ : DateTime[] = Array.from({length: 7}, (_, i) => localSunday.plus({days: i}))
+
+    const minutePeriod = 10
+
+    // we're assuming the times from the server are in Mexico City time zone
+    const startLocalDT = DateTime.now().setZone("America/Mexico_City", {keepLocalTime: true}).set({hour: startHour, minute: startMin}).toLocal()
+    const endLocalDT = DateTime.now().setZone("America/Mexico_City", {keepLocalTime: true}).set({hour: endHour, minute: endMin}).toLocal()
+
+    startHour = startLocalDT.hour
+    startMin = startLocalDT.minute
+
+    endHour = endLocalDT.hour
+    endMin = endLocalDT.minute
+
+    let scheduleStartMin = 0
+    let scheduleEndMin = 23 * 60 + 59
+
+    if (endHour * 60 + endMin >= startHour * 60 + startMin) {
+        scheduleStartMin = startHour * 60 + startMin
+        scheduleEndMin  = endHour * 60 + endMin
+    }
+
+    const schedule : DateTime[][] = week_.map((dt)=>{
+        const output : DateTime[] = []
+
+        for (let min = scheduleStartMin; min < scheduleEndMin; min += minutePeriod) {
+            output.push(dt.plus({minutes: min}))
+        }
+
+        return output
+    })
+
+    return (
+        <>
+        <Image alt="Company logo" src={logoURL} width={100} height={100} style={{display: "block", margin: "0 auto"}}/>
+        <Typography variant="h3" align="center">{businessName}</Typography>
+        <Box alignContent={"center"} textAlign={"center"}>
+            <div>{address ? `Address: ${address}` : "(No address available)"}</div>
+            <div>{phone && `Phone number: ${phone}`}</div>
+        </Box>
+        <div style={{display: "flex", justifyContent: "center", gap: "2rem"}}>
+            <a href="" onClick={(e) => {e.preventDefault() ; setWeekOffset((v) => v - 1)}}>{"<<"}</a>
+            <a href="" onClick={(e) => {e.preventDefault() ; setWeekOffset(0)}}>{"This week"}</a>
+            <a href="" onClick={(e) => {e.preventDefault() ; setWeekOffset((v) => v + 1)}}>{">>"}</a>
+        </div>
+        <TableContainer component={Paper}>
+            <Table stickyHeader sx={{tableLayout: "fixed", minWidth: "600px"}}>
+                <TableHead>
+                    <TableRow>
+                        {schedule.map((d, weekday) => (
+                        <TableCell key={weekday} align="center">
+                            <div>{weekdays[d[0].get("weekday") % 7]}</div>
+                            <div style={{fontWeight: "bold"}}><NoSsr>{months[d[0].get("month") - 1]}{" "}{d[0].get("day")}</NoSsr></div>
+                        </TableCell>
+                        ))}
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {schedule[0].map((_, timeslot) => (
+                    <TableRow key={timeslot}>
+                        {schedule.map((_, weekday)=>(
+                        <TableCell key={weekday} align="center">
+                            <NoSsr>{schedule[weekday][timeslot].toISOTime()}</NoSsr>
+                        </TableCell>
+                        ))}
+                    </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+        </>
+    )
+}
+/*
     if (!logoURL) {
         logoURL = "/default_pfp.jpg"
     }
@@ -152,4 +234,4 @@ export default function BusinessHomePage({businessName, address, phone, startHou
         </Dialog>
         </>
     )
-}
+}*/
