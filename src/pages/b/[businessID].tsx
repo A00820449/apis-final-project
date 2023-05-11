@@ -1,10 +1,11 @@
 import { getBusinessData } from "@/lib/db";
-import { getHourMinuteString } from "@/lib/util";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, NoSsr, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Box, Button, NoSsr, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import Image from "next/image";
 import { useState } from "react";
 import { DateTime } from "luxon";
+import AppointmentButton from "@/components/appoitmentButton";
+import AppointmentForm from "@/components/appointmentForm";
 
 type Query = {
     businessID: string
@@ -21,7 +22,7 @@ type Props = {
     startMin: number,
     endHour: number,
     endMin: number,
-    workDays: number[],
+    workDays: [boolean, boolean, boolean, boolean, boolean, boolean, boolean],
     catalog: {id: string, name: string}[]
 }
 
@@ -44,11 +45,11 @@ export async function getServerSideProps({query}: GetServerSidePropsContext) : P
             address: businessData.address,
             phone: businessData.phoneNum,
             logoURL: businessData.logoURL,
-            startHour: 8,
+            startHour: 22,
             startMin: 0,
-            endHour: 18,
+            endHour: 5,
             endMin: 0,
-            workDays: [1, 2, 3, 4, 5],
+            workDays: [false, true, true, true, true, true, false],
             catalog: businessData.catalog.map((v) => ({id: v.id, name: v.eventName}))
         }
     }
@@ -59,8 +60,11 @@ const months : readonly string[] = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "J
 
 export default function BusinessHomePage({businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays, catalog}: Props) {
 
-    const [appointmentDate, setAppointmentDate] = useState<Date|null>(null)
+    const [appointmentDate, setAppointmentDate] = useState<DateTime|null>(null)
     const [weekOffset, setWeekOffset] = useState(0)
+    const weekOffsetLimit = 8
+
+    const setAppointment = (d: DateTime) => {setAppointmentDate(d)}
 
     if (!logoURL) {
         logoURL = "/default_pfp.jpg"
@@ -70,7 +74,7 @@ export default function BusinessHomePage({businessName, address, phone, startHou
 
     const week_ : DateTime[] = Array.from({length: 7}, (_, i) => localSunday.plus({days: i}))
 
-    const minutePeriod = 10
+    const minutePeriod = 30
 
     // we're assuming the times from the server are in Mexico City time zone
     const startLocalDT = DateTime.now().setZone("America/Mexico_City", {keepLocalTime: true}).set({hour: startHour, minute: startMin}).toLocal()
@@ -109,18 +113,19 @@ export default function BusinessHomePage({businessName, address, phone, startHou
             <div>{phone && `Phone number: ${phone}`}</div>
         </Box>
         <div style={{display: "flex", justifyContent: "center", gap: "2rem"}}>
-            <a href="" onClick={(e) => {e.preventDefault() ; setWeekOffset((v) => v - 1)}}>{"<<"}</a>
-            <a href="" onClick={(e) => {e.preventDefault() ; setWeekOffset(0)}}>{"This week"}</a>
-            <a href="" onClick={(e) => {e.preventDefault() ; setWeekOffset((v) => v + 1)}}>{">>"}</a>
+            <Button href="" disabled={weekOffset <= 0}  onClick={() => setWeekOffset((v) => v - 1)}>{"<<"}</Button>
+            <Button href="" onClick={() => setWeekOffset(0)}>{"This week"}</Button>
+            <Button href="" disabled={weekOffset > weekOffsetLimit}  onClick={() => setWeekOffset((v) => v + 1)}>{">>"}</Button>
         </div>
         <TableContainer component={Paper}>
             <Table stickyHeader sx={{tableLayout: "fixed", minWidth: "600px"}}>
+            <NoSsr>
                 <TableHead>
                     <TableRow>
                         {schedule.map((d, weekday) => (
                         <TableCell key={weekday} align="center">
                             <div>{weekdays[d[0].get("weekday") % 7]}</div>
-                            <div style={{fontWeight: "bold"}}><NoSsr>{months[d[0].get("month") - 1]}{" "}{d[0].get("day")}</NoSsr></div>
+                            <div style={{fontWeight: "bold"}}>{months[d[0].get("month") - 1]}{" "}{d[0].get("day")}</div>
                         </TableCell>
                         ))}
                     </TableRow>
@@ -130,14 +135,16 @@ export default function BusinessHomePage({businessName, address, phone, startHou
                     <TableRow key={timeslot}>
                         {schedule.map((_, weekday)=>(
                         <TableCell key={weekday} align="center">
-                            <NoSsr>{schedule[weekday][timeslot].toISOTime()}</NoSsr>
+                            <AppointmentButton appointmentTime={schedule[weekday][timeslot]} startHour={startHour} startMinute={startMin} endHour={endHour} endMinute={endMin} setApponitment={setAppointment} workdays={workDays}/>
                         </TableCell>
                         ))}
                     </TableRow>
                     ))}
                 </TableBody>
+            </NoSsr>
             </Table>
         </TableContainer>
+        <AppointmentForm catalog={catalog} appointmentDate={appointmentDate}  clearAppointmentDate={()=>{setAppointmentDate(null)}}/>
         </>
     )
 }
