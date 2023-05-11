@@ -48,6 +48,11 @@ export default function SignUp() {
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault()
+
+        if (uploading) {return}
+
+        setErrMessage("")
+
         const formData = new FormData(formEl.current || undefined)
 
         const name = formData.get("name")?.toString()?.trim() || ''

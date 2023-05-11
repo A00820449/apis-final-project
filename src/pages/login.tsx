@@ -50,6 +50,8 @@ export default function Login() {
 
         if (uploading) {return}
 
+        setMessage("")
+
         const data = new FormData(e.currentTarget)
 
         const username = data.get("username")?.toString()?.trim() || ''
@@ -58,7 +60,6 @@ export default function Login() {
         if (!username || !password) {return}
 
         setUploading(true)
-        setMessage("")
 
         try {
             const res = await fetchLogin({username, password})
