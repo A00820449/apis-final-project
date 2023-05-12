@@ -23,7 +23,8 @@ type Props = {
     endHour: number,
     endMin: number,
     workDays: [boolean, boolean, boolean, boolean, boolean, boolean, boolean],
-    catalog: {id: string, name: string}[]
+    catalog: {id: string, name: string}[],
+    minPeriod: number
 }
 
 export async function getServerSideProps({query}: GetServerSidePropsContext) : Promise<GetServerSidePropsResult<Props>> {
@@ -37,6 +38,7 @@ export async function getServerSideProps({query}: GetServerSidePropsContext) : P
         }
     }
 
+
     return {
         props: {
             id: businessData.id,
@@ -45,12 +47,13 @@ export async function getServerSideProps({query}: GetServerSidePropsContext) : P
             address: businessData.address,
             phone: businessData.phoneNum,
             logoURL: businessData.logoURL,
-            startHour: 22,
-            startMin: 0,
-            endHour: 5,
-            endMin: 0,
-            workDays: [false, true, true, true, true, true, false],
-            catalog: businessData.catalog.map((v) => ({id: v.id, name: v.eventName}))
+            startHour: businessData.openHour,
+            startMin: businessData.openMinute,
+            endHour: businessData.closeHour,
+            endMin: businessData.closeMinute,
+            workDays: [businessData.openSunday, businessData.openMonday, businessData.openTuesday, businessData.openWednesday, businessData.openThursday, businessData.openFriday, businessData.openSaturday],
+            catalog: businessData.catalog.map((v) => ({id: v.id, name: v.eventName})),
+            minPeriod: businessData.minutePeriod
         }
     }
 }
@@ -58,7 +61,7 @@ export async function getServerSideProps({query}: GetServerSidePropsContext) : P
 const weekdays : readonly string[] = ["SUN", "MON", "TUE", "WED" , "THU", "FRI", "SAT"]
 const months : readonly string[] = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
-export default function BusinessHomePage({businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays, catalog}: Props) {
+export default function BusinessHomePage({businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays, catalog, minPeriod}: Props) {
 
     const [appointmentDate, setAppointmentDate] = useState<DateTime|null>(null)
     const [weekOffset, setWeekOffset] = useState(0)
@@ -74,7 +77,7 @@ export default function BusinessHomePage({businessName, address, phone, startHou
 
     const week_ : DateTime[] = Array.from({length: 7}, (_, i) => localSunday.plus({days: i}))
 
-    const minutePeriod = 30
+    const minutePeriod = minPeriod || 10
 
     // we're assuming the times from the server are in Mexico City time zone
     const startLocalDT = DateTime.now().setZone("America/Mexico_City", {keepLocalTime: true}).set({hour: startHour, minute: startMin}).toLocal()
@@ -113,9 +116,9 @@ export default function BusinessHomePage({businessName, address, phone, startHou
             <div>{phone && `Phone number: ${phone}`}</div>
         </Box>
         <div style={{display: "flex", justifyContent: "center", gap: "2rem"}}>
-            <Button href="" disabled={weekOffset <= 0}  onClick={() => setWeekOffset((v) => v - 1)}>{"<<"}</Button>
-            <Button href="" onClick={() => setWeekOffset(0)}>{"This week"}</Button>
-            <Button href="" disabled={weekOffset > weekOffsetLimit}  onClick={() => setWeekOffset((v) => v + 1)}>{">>"}</Button>
+            <Button disabled={weekOffset <= 0}  onClick={() => setWeekOffset((v) => v - 1)}>{"<<"}</Button>
+            <Button onClick={() => setWeekOffset(0)}>{"This week"}</Button>
+            <Button disabled={weekOffset > weekOffsetLimit}  onClick={() => setWeekOffset((v) => v + 1)}>{">>"}</Button>
         </div>
         <TableContainer component={Paper}>
             <Table stickyHeader sx={{tableLayout: "fixed", minWidth: "600px"}}>

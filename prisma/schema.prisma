@@ -22,6 +22,19 @@ model BusinessUser {
   isAdmin       Boolean @default(false)
   catalog       Service[]
   appointments  Appointment[]
+  openHour      Int @default(0)
+  openMinute    Int @default(0)
+  closeHour     Int @default(23)
+  closeMinute   Int @default(59)
+  openSunday    Boolean @default(true)
+  openMonday    Boolean @default(true)
+  openTuesday   Boolean @default(true)
+  openWednesday Boolean @default(true)
+  openThursday  Boolean @default(true)
+  openFriday    Boolean @default(true)
+  openSaturday  Boolean @default(true)
+  maxWeeks      Int @default(4)
+  minutePeriod  Int @default(10)
 }
 
 model Service {
