@@ -12,12 +12,14 @@ const handler: NextApiHandler<User|UserError> = async (req, res) => {
     try {
         const user = await getUserData(id)
         if (!user) {
-            return res.status(400).json({id: null, message: "Server error"})
+            req.session.destroy()
+            return res.status(400).json({id: null, message: "user not found"})
         }
         res.json(user)
     } catch (e) {
         console.error(e)
-        res.status(500).json({id: null, message: "Server error"})
+        req.session.destroy()
+        res.status(500).json({id: null, message: "server error"})
     }
 }
 
