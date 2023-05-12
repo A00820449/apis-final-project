@@ -5,8 +5,9 @@ import Link from "next/link";
 import { NextPageWithLayout } from "../_app";
 import CopyToClipboard from "@/components/copyToClipboard";
 import { useUser } from "@/lib/hooks";
+import UserInfoForm from "@/components/userInfoForm";
 
-// gets User session info and redirects to /login if not found
+// gets User session and redirects to /login if not found
 export const getServerSideProps = getServerSidePropsUserSession
 
 const Dashboard : NextPageWithLayout<UserSessionProps> = () =>  {
@@ -31,6 +32,9 @@ const Dashboard : NextPageWithLayout<UserSessionProps> = () =>  {
             </div>
             <div>
                 <Link href={"/api/redirectLogout"}>Logout</Link>
+            </div>
+            <div>
+                <UserInfoForm/>
             </div>
         </Container>
     )

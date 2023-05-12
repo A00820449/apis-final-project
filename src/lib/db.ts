@@ -132,3 +132,11 @@ export async function createService(businessUserID: string,  eventName: string, 
     return null
   }
 }
+
+export async function getUserFull(id: string) {
+  return prisma.businessUser.findUnique({
+    where: {
+      id: id
+    }
+  })
+}
