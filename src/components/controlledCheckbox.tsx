@@ -6,5 +6,5 @@ export default function ControlledCheckBox({disabled = false, defaultChecked = f
     const changeHandler = (_: unknown, checked: boolean) => {
         setValue(checked)
     }
-    return <Checkbox disabled={disabled} checked={disabled? defaultChecked : value} defaultChecked={defaultChecked} onChange={changeHandler} {...props} />
+    return <Checkbox disabled={disabled} checked={disabled? defaultChecked : value} onChange={changeHandler} {...props} />
 }

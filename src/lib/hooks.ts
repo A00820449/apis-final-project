@@ -1,11 +1,23 @@
 import { GetCatalogResponse } from "@/pages/api/getCatalog";
 import { GetUserFullResponse } from "@/pages/api/getUserFull";
+import { UpdateUserInput, UpdateUserResponse } from "@/pages/api/updateUser";
 import { User, UserResponse } from "@/pages/api/user";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
+
+const fetcherPost = async (url: string, {arg}: {arg: any}) => {
+    return await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(arg)
+    }).then(r => r.json())
+}
 
 const defaultUser : User = {id: "", businessID: "", businessName: "", isAdmin: false}
 
@@ -53,4 +65,9 @@ export function useUserFull() {
     const {data, error, isLoading, mutate} = useSWR<GetUserFullResponse>("/api/getUserFull", fetcher)
 
     return {user: data, isLoading, error, mutate}
+}
+
+export function useMutateUserData() {
+    const {data, isMutating, error, trigger} = useSWRMutation<UpdateUserResponse, any, "/api/updateUser", UpdateUserInput>("/api/updateUser", fetcherPost)
+    return {response: data, isMutating, error, trigger}
 }
