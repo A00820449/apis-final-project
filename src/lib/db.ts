@@ -1,3 +1,4 @@
+import { UpdateUserInput } from "@/pages/api/updateUser";
 import { User } from "@/pages/api/user";
 import { PrismaClient } from "@prisma/client";
 import { compare, hash } from "bcrypt";
@@ -138,5 +139,14 @@ export async function getUserFull(id: string) {
     where: {
       id: id
     }
+  })
+}
+
+export async function updateUser(id: string, data: UpdateUserInput) {
+  return await prisma.businessUser.update({
+    where: {
+      id: id
+    },
+    data: data
   })
 }
