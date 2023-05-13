@@ -4,6 +4,7 @@ import { NextApiHandler } from "next";
 import { z } from "zod";
 
 const inputSchema = z.object({
+    businessName: z.string().nonempty().optional(),
     stringopenHour: z.number().optional(),
     openMinute: z.number().optional(),
     closeHour: z.number().optional(),
