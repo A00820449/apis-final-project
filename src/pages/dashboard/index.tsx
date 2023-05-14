@@ -22,16 +22,11 @@ const Dashboard : NextPageWithLayout<UserSessionProps> = () =>  {
     urlObject.pathname = `/@${user.businessID}`
 
     url = urlObject.toString()
-    console.log(url)
-
     return (
         <Container sx={{marginTop: "1rem"}}>
             <Typography variant="h4">Hello, {user.businessName}</Typography>
             <div style={{display: "flex", alignItems: "center"}}>
                 <span style={{marginRight: "1rem"}}>URL for appointments:</span><CopyToClipboard text={url}/>
-            </div>
-            <div>
-                <Link href={"/api/redirectLogout"}>Logout</Link>
             </div>
             <div>
                 <UserInfoForm/>

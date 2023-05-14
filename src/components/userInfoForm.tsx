@@ -1,18 +1,8 @@
-import { useMutateUserData, useUserFull } from "@/lib/hooks"
-import { Button, FormControlLabel, FormGroup, InputLabel, Switch, TextField } from "@mui/material"
+import { useMutateUserData, useUser, useUserFull } from "@/lib/hooks"
+import { Alert, Button, FormControlLabel, FormGroup, InputLabel, Snackbar, Switch, TextField } from "@mui/material"
 import { FormEventHandler, SyntheticEvent, useRef, useState } from "react"
 import ControlledCheckBox from "./controlledCheckbox"
-import { UpdateUserInput, UpdateUserResponse } from "@/pages/api/updateUser"
-
-async function fetchUserUpdate(input: UpdateUserInput) : Promise<UpdateUserResponse> {
-    return await fetch("/api/updateUser", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(input)
-    }).then(r => r.json())
-}
+import ControlledTextField from "./controlledTextField"
 
 function parseEmptyString(s: string|undefined) {
     if (s === undefined) {
@@ -61,15 +51,14 @@ function parseMinute(s: string|undefined) {
 
 export default function UserInfoForm() {
     const [disabled, setDisabled] = useState(true)
+    const [snackInfo, setSnackInfo] = useState({isError: false, message: "", open: false})
     const formRef = useRef<HTMLFormElement>(null)
-    const {user, mutate} = useUserFull()
+    const {mutate: mutateUser} = useUser(false)
+    const {user, mutate: mutateUserFull} = useUserFull()
     const {isMutating, trigger} = useMutateUserData()
 
     const switchHandle = (_: SyntheticEvent<Element, Event>, v: boolean) => {
         setDisabled(!v)
-        if (!v) {
-            formRef.current?.reset()
-        }
     }
 
     const handleSubmit : FormEventHandler<HTMLFormElement> = async (e) => {
@@ -101,15 +90,17 @@ export default function UserInfoForm() {
 
         const res = await trigger(data)
         if (!res) {
-            return alert("an error occurred")
+            return setSnackInfo({open: true, message: "An error occurred", isError: true})
         }
 
         if (res.ok) {
-            mutate()
-            alert("Change done!")
+            mutateUser()
+            mutateUserFull()
+            setSnackInfo({open: true, message: "Successful update!", isError: false})
         }
         else {
-            alert(res.message)
+            const msg = res.message? `Error: ${res.message}` : "An error occurred"
+            setSnackInfo({open: true, message: msg, isError: false})
         }
     }
 
@@ -117,20 +108,21 @@ export default function UserInfoForm() {
         return <></>
     }
     return (
+        <>
+        <FormControlLabel control={<Switch/>} label="Edit" onChange={switchHandle}/>
         <form ref={formRef} style={{maxWidth: '800px', display: "flex", flexDirection: "column", gap: "1rem"}} onSubmit={handleSubmit}>
-            <FormControlLabel control={<Switch/>} label="Edit" onChange={switchHandle}/>
-            <TextField name="businessName" defaultValue={user.businessName} disabled={disabled} label="Business Name" fullWidth/>
-            <TextField name="phoneNum" inputProps={{pattern:"[0-9]{10}"}} defaultValue={user.phoneNum} disabled={disabled} label="Phone Number (10 digits)" fullWidth/>
-            <TextField name="address" defaultValue={user.address} disabled={disabled} label="Address" fullWidth multiline rows={4}/>
+            <ControlledTextField required name="businessName" defaultValue={user.businessName} disabled={disabled} label="Business Name" fullWidth/>
+            <ControlledTextField name="phoneNum" inputProps={{pattern:"[0-9]{10}"}} defaultValue={user.phoneNum} disabled={disabled} label="Phone Number (10 digits)" fullWidth/>
+            <ControlledTextField name="address" defaultValue={user.address} disabled={disabled} label="Address" fullWidth multiline rows={4}/>
             <InputLabel disabled={disabled}>Open hour</InputLabel>
             <div>
-                <TextField name="openHour" defaultValue={user.openHour} type="number" inputProps={{min: "0", max: "23"}} sx={{width: "4rem"}} size="small" disabled={disabled}/>
-                <TextField name="openMinute" defaultValue={user.openMinute} inputProps={{min: "0", max: "59"}} type="number" sx={{width: "4rem"}} size="small" disabled={disabled}/>
+                <ControlledTextField name="openHour" defaultValue={user.openHour} type="number" inputProps={{min: "0", max: "23"}} sx={{width: "4rem"}} size="small" disabled={disabled}/>
+                <ControlledTextField name="openMinute" defaultValue={user.openMinute} inputProps={{min: "0", max: "59"}} type="number" sx={{width: "4rem"}} size="small" disabled={disabled}/>
             </div>
             <InputLabel disabled={disabled}>Close hour</InputLabel>
             <div>
-                <TextField name="closeHour" defaultValue={user.closeHour} type="number" inputProps={{min: "0", max: "23"}} sx={{width: "4rem"}} size="small" disabled={disabled}/>
-                <TextField name="closeMinute" defaultValue={user.closeMinute} inputProps={{min: "0", max: "59"}} type="number" sx={{width: "4rem"}} size="small" disabled={disabled}/>
+                <ControlledTextField name="closeHour" defaultValue={user.closeHour} type="number" inputProps={{min: "0", max: "23"}} sx={{width: "4rem"}} size="small" disabled={disabled}/>
+                <ControlledTextField name="closeMinute" defaultValue={user.closeMinute} inputProps={{min: "0", max: "59"}} type="number" sx={{width: "4rem"}} size="small" disabled={disabled}/>
             </div>
             <FormGroup sx={{display: "flex", alignItems: "center", justifyContent: "center" ,flexDirection: "row"}}>
                 <FormControlLabel sx={{width: "80px"}} control={<ControlledCheckBox name="openSunday" disabled={disabled} defaultChecked={user.openSunday}/>} label={"Sunday"} disabled={disabled} labelPlacement="top"/>
@@ -143,5 +135,11 @@ export default function UserInfoForm() {
             </FormGroup>
             <Button disabled={disabled} variant="contained" type="submit">Update</Button>
         </form>
+        <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={snackInfo.open} autoHideDuration={3000} onClose={() => setSnackInfo((s) => ({isError: s.isError, message: s.message, open: false}))}>
+            <Alert sx={{width: "100%"}} severity={snackInfo.isError? "error" : "success"} onClose={() => setSnackInfo((s) => ({isError: s.isError, message: s.message, open: false}))}>
+                {snackInfo.message}
+            </Alert>
+        </Snackbar>
+        </>
     )
 }

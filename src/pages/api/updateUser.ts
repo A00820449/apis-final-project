@@ -5,7 +5,7 @@ import { z } from "zod";
 
 const inputSchema = z.object({
     businessName: z.string().nonempty().optional(),
-    stringopenHour: z.number().optional(),
+    openHour: z.number().optional(),
     openMinute: z.number().optional(),
     closeHour: z.number().optional(),
     closeMinute: z.number().optional(),

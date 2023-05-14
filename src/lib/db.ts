@@ -150,3 +150,5 @@ export async function updateUser(id: string, data: UpdateUserInput) {
     data: data
   })
 }
+
+export async function checkAppointment(businessUserID: string, time: number) {}
