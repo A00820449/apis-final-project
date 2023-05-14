@@ -61,7 +61,7 @@ export async function getServerSideProps({query}: GetServerSidePropsContext) : P
 const weekdays : readonly string[] = ["SUN", "MON", "TUE", "WED" , "THU", "FRI", "SAT"]
 const months : readonly string[] = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
-export default function BusinessHomePage({businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays, catalog, minPeriod}: Props) {
+export default function BusinessHomePage({id, businessName, address, phone, startHour, startMin, endHour, endMin, logoURL, workDays, catalog, minPeriod}: Props) {
 
     const [appointmentDate, setAppointmentDate] = useState<DateTime|null>(null)
     const [weekOffset, setWeekOffset] = useState(0)
@@ -138,7 +138,7 @@ export default function BusinessHomePage({businessName, address, phone, startHou
                     <TableRow key={timeslot}>
                         {schedule.map((_, weekday)=>(
                         <TableCell key={weekday} align="center">
-                            <AppointmentButton appointmentTime={schedule[weekday][timeslot]} startHour={startHour} startMinute={startMin} endHour={endHour} endMinute={endMin} setApponitment={setAppointment} workdays={workDays}/>
+                            <AppointmentButton minutePeriod={minPeriod} businessID={id} appointmentTime={schedule[weekday][timeslot]} startHour={startHour} startMinute={startMin} endHour={endHour} endMinute={endMin} setApponitment={setAppointment} workdays={workDays}/>
                         </TableCell>
                         ))}
                     </TableRow>

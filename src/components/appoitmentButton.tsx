@@ -1,3 +1,4 @@
+import { useCheckAppointment } from "@/lib/hooks";
 import { getHourMinuteString } from "@/lib/util";
 import { Button } from "@mui/material";
 import { DateTime } from "luxon";
@@ -9,6 +10,8 @@ type AppointmentButtonProps = {
     endHour: number,
     endMinute: number,
     workdays: boolean[],
+    minutePeriod: number,
+    businessID: string,
     setApponitment: (d: DateTime) => void
 }
 
@@ -16,8 +19,11 @@ function greaterOrEqualThanHM(startHour: number, startMinute: number, endHour: n
     return startHour >= endHour && startMinute >= endMinute
 }
 
-export default function AppointmentButton({setApponitment, appointmentTime, workdays, startHour, startMinute, endHour, endMinute}: AppointmentButtonProps) {
-    const [appointment, isLoading] = [null, false]
+export default function AppointmentButton({setApponitment, appointmentTime, workdays, startHour, startMinute, endHour, endMinute, minutePeriod, businessID}: AppointmentButtonProps) {
+    const {found, isLoading} = 
+        //useCheckAppointment({businessUserID: businessID, timeStart: appointmentTime.toMillis(), timeEnd: appointmentTime.plus({minutes: minutePeriod}).toMillis()})
+        {found: false, isLoading: false}
+
     let disabled = false
 
     if (DateTime.now().toSeconds() >= appointmentTime.toSeconds()) {
@@ -29,7 +35,7 @@ export default function AppointmentButton({setApponitment, appointmentTime, work
     else if (isLoading) {
         disabled = true
     }
-    else if (appointment !== null) {
+    else if (found) {
         disabled = true
     }
     else if (

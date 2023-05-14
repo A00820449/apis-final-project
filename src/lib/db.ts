@@ -151,4 +151,20 @@ export async function updateUser(id: string, data: UpdateUserInput) {
   })
 }
 
-export async function checkAppointment(businessUserID: string, time: number) {}
+export async function checkAppointment(businessUserID: string, timeStart: number, timeEnd: number) {
+
+  return await prisma.appointment.findFirst({
+    where: {
+      businessUserID: businessUserID,
+      timeStart: {
+        lt: new Date(timeEnd)
+      },
+      timeEnd: {
+        gt:new Date(timeStart)
+      }
+    },
+    select: {
+      id: true
+    }
+  })
+}
