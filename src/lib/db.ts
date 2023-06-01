@@ -1,6 +1,6 @@
 import { UpdateUserInput } from "@/pages/api/updateUser";
 import { User } from "@/pages/api/user";
-import { PrismaClient } from "@prisma/client";
+import { Appointment, PrismaClient } from "@prisma/client";
 import { compare, hash } from "bcrypt";
 
 // Boilerplate so the db connection is saved between reloads
@@ -160,11 +160,17 @@ export async function checkAppointment(businessUserID: string, timeStart: number
         lt: new Date(timeEnd)
       },
       timeEnd: {
-        gt:new Date(timeStart)
+        gt: new Date(timeStart)
       }
     },
     select: {
       id: true
     }
+  })
+}
+
+export async function createAppointment(data: Appointment) {
+  return await prisma.appointment.create({
+    data: data
   })
 }

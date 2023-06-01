@@ -56,7 +56,5 @@ model Appointment {
   contactEmail          String?
   confirmed             Boolean @default(false)
   creationTime          DateTime @default(now())
-  appointmentTime       DateTime
-  endTime               DateTime
   notes                 String?
 }
