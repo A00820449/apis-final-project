@@ -73,8 +73,8 @@ export function useMutateUserData() {
     return {response: data, isMutating, error, trigger}
 }
 
-export function useCheckAppointment(args: CheckAppointmentInput) {
-    const {data, error, isLoading, mutate} = useSWR<CheckAppointmentResponse>(`/api/checkAppointment?${new URLSearchParams({json: JSON.stringify(args)})}`, fetcher, {revalidateIfStale: false, revalidateOnFocus: false, revalidateOnMount: false})
+export function useCheckAppointment(args: CheckAppointmentInput, disable = false) {
+    const {data, error, isLoading, mutate} = useSWR<CheckAppointmentResponse>(disable ? null : `/api/checkAppointment?${new URLSearchParams({json: JSON.stringify(args)})}`, fetcher, {revalidateIfStale: false, revalidateOnFocus: false, revalidateOnMount: false})
 
     return {found: data, error, isLoading, mutate}
 }

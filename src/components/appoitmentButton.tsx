@@ -20,30 +20,35 @@ function greaterOrEqualThanHM(startHour: number, startMinute: number, endHour: n
 }
 
 export default function AppointmentButton({setApponitment, appointmentTime, workdays, startHour, startMinute, endHour, endMinute, minutePeriod, businessID}: AppointmentButtonProps) {
-    const {found, isLoading} = 
-        //useCheckAppointment({businessUserID: businessID, timeStart: appointmentTime.toMillis(), timeEnd: appointmentTime.plus({minutes: minutePeriod}).toMillis()})
-        {found: false, isLoading: false}
 
-    let disabled = false
+    let isNonWorkTIme = false
 
     if (DateTime.now().toSeconds() >= appointmentTime.toSeconds()) {
-        disabled = true
+        isNonWorkTIme = true
     }
     else if (!workdays[appointmentTime.get("weekday") % 7]) {
-        disabled = true
-    }
-    else if (isLoading) {
-        disabled = true
-    }
-    else if (found) {
-        disabled = true
+        isNonWorkTIme = true
     }
     else if (
         greaterOrEqualThanHM(startHour, startMinute, endHour, endMinute) && // cycled over, migth have to be disabled
         greaterOrEqualThanHM(appointmentTime.hour, appointmentTime.minute, endHour, endMinute) &&
         !greaterOrEqualThanHM(appointmentTime.hour, appointmentTime.minute, startHour, startMinute)
     ) {
-        disabled = true
+        isNonWorkTIme = true
+    }
+
+    const {found, isLoading} = 
+    useCheckAppointment({businessUserID: businessID, timeStart: appointmentTime.toMillis(), timeEnd: appointmentTime.plus({minutes: minutePeriod}).toMillis()}, isNonWorkTIme)
+    //{found: false, isLoading: false}
+
+    let disabled = isNonWorkTIme
+    if (!isNonWorkTIme) {
+        if (isLoading) {
+            disabled = true
+        }
+        else if (found) {
+            disabled = true
+        }
     }
 
     return (
