@@ -169,8 +169,26 @@ export async function checkAppointment(businessUserID: string, timeStart: number
   })
 }
 
-export async function createAppointment(data: Appointment) {
+export async function createAppointment(businessUserID: string, serviceName: string, timeStart: number, timeEnd: number, contactEmail?: string, notes?: string) {
+  if (timeStart >= timeEnd) {
+    throw new Error("invalid time range")
+  }
   return await prisma.appointment.create({
-    data: data
+    data: {
+      businessUserID: businessUserID,
+      serviceName: serviceName,
+      timeStart: new Date(timeStart),
+      timeEnd: new Date(timeEnd),
+      contactEmail: contactEmail,
+      notes: notes
+    }
+  })
+}
+
+export async function getService(id: string) {
+  return await prisma.service.findUnique({
+    where: {
+      id: id
+    }
   })
 }
