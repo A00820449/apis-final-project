@@ -147,7 +147,7 @@ export default function BusinessHomePage({id, businessName, address, phone, star
             </NoSsr>
             </Table>
         </TableContainer>
-        <AppointmentForm catalog={catalog} appointmentDate={appointmentDate}  clearAppointmentDate={()=>{setAppointmentDate(null)}}/>
+        <AppointmentForm catalog={catalog} appointmentDate={appointmentDate}  clearAppointmentDate={()=>{setAppointmentDate(null)}} businessUserID={id}/>
         </>
     )
 }

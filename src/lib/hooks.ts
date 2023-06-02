@@ -1,4 +1,5 @@
 import { CheckAppointmentInput, CheckAppointmentResponse } from "@/pages/api/checkAppointment";
+import { CreateAppointmentInput, CreateAppointmentResponse } from "@/pages/api/createAppointment";
 import { GetCatalogResponse } from "@/pages/api/getCatalog";
 import { GetUserFullResponse } from "@/pages/api/getUserFull";
 import { UpdateUserInput, UpdateUserResponse } from "@/pages/api/updateUser";
@@ -77,4 +78,10 @@ export function useCheckAppointment(args: CheckAppointmentInput, disable = false
     const {data, error, isLoading, mutate} = useSWR<CheckAppointmentResponse>(disable ? null : `/api/checkAppointment?${new URLSearchParams({json: JSON.stringify(args)})}`, fetcher, {revalidateIfStale: false, revalidateOnFocus: false, revalidateOnMount: false})
 
     return {found: data, error, isLoading, mutate}
+}
+
+export function useCreateAppointment() {
+    const {data, isMutating, error, trigger} = useSWRMutation<CreateAppointmentResponse, any, "/api/createAppointment", CreateAppointmentInput>("/api/createAppointment", fetcherPost)
+
+    return {response: data, isMutating, error, trigger}
 }

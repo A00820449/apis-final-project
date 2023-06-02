@@ -24,14 +24,20 @@ const handler : NextApiHandler<CreateAppointmentResponse> =async (req, res) => {
     const {businessUserID, serviceID, timeStart, contactEmail, notes} = input.data
 
     let service
-    try {
-        service = await getService(serviceID)
-    }
-    catch (e) {
-        console.error(e)
-        return res.status(500).json({id: null, message: "server error"})
-    }
 
+    if (serviceID === "other") {
+        service = {durationInMins: 10, eventName: "Other"}
+    }
+    else {
+        try {
+            service = await getService(serviceID)
+        }
+        catch (e) {
+            console.error(e)
+            return res.status(500).json({id: null, message: "server error"})
+        }
+    }
+   
     if (service === null) {
         return res.status(400).json({id: null, message: "invalid request"})
     }
