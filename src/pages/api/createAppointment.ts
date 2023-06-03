@@ -15,7 +15,7 @@ export type CreateAppointmentInput = z.infer<typeof inputSchema>
 
 export type CreateAppointmentResponse = {id: string} | {id: null, message: string}
 
-const handler : NextApiHandler<CreateAppointmentResponse> =async (req, res) => {
+const handler : NextApiHandler<CreateAppointmentResponse> = async (req, res) => {
     const input = inputSchema.safeParse(req.body)
     if (!input.success) {
         return res.status(400).json({id: null, message: "invalid request"})
@@ -51,7 +51,13 @@ const handler : NextApiHandler<CreateAppointmentResponse> =async (req, res) => {
     }
     catch (e) {
         console.error(e)
-        return res.status(500).json({id: null, message: "server error"})
+        let msg = "server error"
+        
+        if (e instanceof Error) {
+            msg = e.message || msg
+        }
+
+        return res.status(500).json({id: null, message: msg})
     }
 }
 

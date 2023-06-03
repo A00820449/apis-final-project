@@ -173,6 +173,13 @@ export async function createAppointment(businessUserID: string, serviceName: str
   if (timeStart >= timeEnd) {
     throw new Error("invalid time range")
   }
+
+  const conflict = await checkAppointment(businessUserID, timeStart, timeEnd)
+
+  if (conflict !== null) {
+    throw new Error("overlapping appointment")
+  }
+
   return await prisma.appointment.create({
     data: {
       businessUserID: businessUserID,
