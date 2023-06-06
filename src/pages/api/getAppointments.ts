@@ -3,7 +3,19 @@ import { withSessionApiRoute } from "@/lib/session";
 import { Appointment } from "@prisma/client";
 import { NextApiHandler } from "next";
 
-export type GetAppointmentsResponse = {appointments: Appointment[]} | {appointments: null, message: string}
+export type ResponseAppointment = {
+    id: string,
+    businessUserID: string, 
+    serviceName: string,
+    timeStart: number,
+    timeEnd: number, 
+    contactEmail: string | null,
+    confirmed: boolean,
+    creationTime: number,
+    notes: string | null
+}
+
+export type GetAppointmentsResponse = {appointments: ResponseAppointment[]} | {appointments: null, message: string}
 
 const handler : NextApiHandler<GetAppointmentsResponse> = async (req, res) => {
     const id = req.session.user_id
@@ -13,7 +25,7 @@ const handler : NextApiHandler<GetAppointmentsResponse> = async (req, res) => {
     }
 
     try {
-        const apps = await getAppointments(id, 50, 0)
+        const apps = (await getAppointments(id, 50, 0)).map((v) => ({...v, timeStart: v.timeStart.getTime(), timeEnd: v.timeEnd.getTime(), creationTime: v.creationTime.getTime()}))
         return res.status(200).json({appointments: apps})
     }
     catch(e) {

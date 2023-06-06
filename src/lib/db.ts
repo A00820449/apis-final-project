@@ -203,7 +203,10 @@ export async function deleteAppointment(id: string) {
 export async function getAppointments(id: string, take: number, skip: number) {
   return await prisma.appointment.findMany({
     where: {
-      businessUserID: id
+      businessUserID: id,
+      timeEnd: {
+        gte: new Date()
+      }
     },
     orderBy: {
       timeStart: "desc"
