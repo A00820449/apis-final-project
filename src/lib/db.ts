@@ -192,10 +192,67 @@ export async function createAppointment(businessUserID: string, serviceName: str
   })
 }
 
+export async function deleteAppointment(id: string) {
+  return prisma.appointment.delete({
+    where: {
+      id: id
+    }
+  })
+}
+
+export async function getAppointments(id: string, take: number, skip: number) {
+  return await prisma.appointment.findMany({
+    where: {
+      businessUserID: id
+    },
+    orderBy: {
+      timeStart: "desc"
+    },
+    skip: skip,
+    take: take
+  })
+}
+
+export async function appointmentBelongsToBusiness(businessUserID: string, appointmentID: string) {
+  const found = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentID,
+      businessUserID: businessUserID,
+    },
+    select: {
+      id: true
+    }
+  })
+
+  return found !== null
+}
+
 export async function getService(id: string) {
   return await prisma.service.findUnique({
     where: {
       id: id
     }
   })
+}
+
+export async function deleteService(id: string) {
+  return await prisma.service.delete({
+    where: {
+      id: id
+    }
+  })
+}
+
+export async function serviceBelongsToBusiness(businessUserID: string, serviceID: string) {
+  const found = await prisma.service.findFirst({
+    where: {
+      id: serviceID,
+      businessUserID: businessUserID
+    },
+    select: {
+      id: true
+    }
+  })
+
+  return found !== null
 }

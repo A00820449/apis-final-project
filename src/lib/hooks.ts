@@ -1,5 +1,8 @@
 import { CheckAppointmentInput, CheckAppointmentResponse } from "@/pages/api/checkAppointment";
 import { CreateAppointmentInput, CreateAppointmentResponse } from "@/pages/api/createAppointment";
+import { DeleteAppointmentInput, DeleteAppointmentResponse } from "@/pages/api/deleteAppointment";
+import { DeleteServiceInput, DeleteServiceResponse } from "@/pages/api/deleteService";
+import { GetAppointmentsResponse } from "@/pages/api/getAppointments";
 import { GetCatalogResponse } from "@/pages/api/getCatalog";
 import { GetUserFullResponse } from "@/pages/api/getUserFull";
 import { UpdateUserInput, UpdateUserResponse } from "@/pages/api/updateUser";
@@ -84,4 +87,22 @@ export function useCreateAppointment() {
     const {data, isMutating, error, trigger} = useSWRMutation<CreateAppointmentResponse, any, "/api/createAppointment", CreateAppointmentInput>("/api/createAppointment", fetcherPost)
 
     return {response: data, isMutating, error, trigger}
+}
+
+export function useDeleteAppointment(args : DeleteAppointmentInput) {
+    const {data, isMutating, error, trigger} = useSWRMutation<DeleteAppointmentResponse>(`/api/deleteAppointment?${new URLSearchParams(args)}`, fetcher)
+
+    return {response: data, isMutating, error, trigger}
+}
+
+export function useDeleteService(args: DeleteServiceInput) {
+    const {data, isMutating, error, trigger} = useSWRMutation<DeleteServiceResponse>(`/api/deleteService?${new URLSearchParams(args)}`, fetcher)
+
+    return {response: data, isMutating, error, trigger}
+}
+
+export function useAppointments() {
+    const {data, isLoading, error, mutate} = useSWR<GetAppointmentsResponse>("/api/getAppointments", fetcher)
+
+    return {appointments: data, isLoading, error, mutate}
 }
