@@ -1,6 +1,6 @@
 import { Drawer, List, ListItem } from "@mui/material";
 import NavListItem from "./navListItem";
-import { Home as HomeIcon, Book as BookIcon } from "@mui/icons-material"
+import { Home as HomeIcon, Book as BookIcon, CalendarMonth as CalendarIcon } from "@mui/icons-material"
 
 type NavDrawerProps = {
     open: boolean,
@@ -14,6 +14,7 @@ export default function NavDrawer({open, setClosed}: NavDrawerProps) {
                 <List>
                     <NavListItem location="/dashboard/" icon={<HomeIcon/>} text="Home"></NavListItem>
                     <NavListItem location="/dashboard/catalog" icon={<BookIcon/>} text="Catalog"></NavListItem>
+                    <NavListItem location="/dashboard/appointments" icon={<CalendarIcon/>} text="Appointments"></NavListItem>
                 </List>
             </div>
         </Drawer>
